@@ -1,4 +1,6 @@
 import React, {PropTypes} from 'react';
+import {connect} from 'react-redux';
+import * as courseActions from '../../actions/courseActions';
 
 class CoursesPage extends React.Component {
   constructor(props, context) {
@@ -19,13 +21,17 @@ class CoursesPage extends React.Component {
   }//end onTitleChange
 
   onClickSave() {
-    alert(`Saving ${this.state.course.title}`);
+    this.props.dispatch(courseActions.createCourse(this.state.course));
   }//end onClickSave
 
+courseRow(course, index) {
+  return <div key={index}>{course.title}</div>;
+}//end courseRow
   render() {
     return (
       <div>
         <h1>Courses</h1>
+        {this.props.courses.map(this.courseRow)}
         <h2>Add Course</h2>
         <input
         type="text"
@@ -34,10 +40,25 @@ class CoursesPage extends React.Component {
         <input
         type="submit"
         value="Save"
-        onChange={this.onClickSave} />
+        onClick={this.onClickSave} />
       </div>
     );//end return
   }//end render
 }//end CoursesPage
 
-export default CoursesPage;
+CoursesPage.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  courses: PropTypes.array.isRequired
+};//end CoursesPage.propTypes
+
+function mapStateToProps(state, ownProps) {
+  return {
+    courses: state.courses //courses from the reducer index
+  };//end return
+}//end mapStateToProps
+
+export default connect(mapStateToProps)(CoursesPage);
+
+//Alternative Export
+//const connectedStateAndProps = connect(mapStateToProps, mapDispatchToProps);
+//export default connectedStateAndProps(CoursesPage);
