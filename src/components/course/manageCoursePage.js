@@ -12,30 +12,59 @@ class ManageCoursePage extends React.Component {
       course: Object.assign({}, props.course),
       errors: {}
     };//end this.state
+
+    this.updateCourseState = this.updateCourseState.bind(this);
+    this.saveCourse = this.saveCourse.bind(this);
   }//end constructor
+
+  updateCourseState(event) {
+    const field = event.target.name;
+    let course = this.state.course;
+    course[field] = event.target.value;
+    return this.setState({course: course});
+  }//end updateCourseState
+
+  saveCourse(event) {
+    event.preventDefault();
+    this.props.actions.saveCourse(this.state.course);
+  }//end saveCourse
 
   render() {
     return (
-    <div>
+      <div>
       <CourseForm
-      allAuthors={[]}
+      allAuthors={this.props.authors}
+      onChange={this.updateCourseState}
+      onSave={this.saveCourse}
       course={this.state.course}
       errors={this.state.errors} />
-    </div>
+      </div>
     );//end return
   }//end render
 
 }//end ManageCoursePage
 
 ManageCoursePage.propTypes = {
-course: PropTypes.object.isRequired
+  course: PropTypes.object.isRequired,
+  authors: PropTypes.array.isRequired,
+  actions: PropTypes.object.isRequired
 };//end ManageCoursePage.propTypes
 
 function mapStateToProps(state, ownProps) {
   let course = {id: '', watchHref: '', title: '', authorId: '', length: '', category: ''};
+
+  const authorsFormattedForDropdown = state.authors.map(author => {
+    return {
+      value: author.id,
+      text: author.firstName + ' ' + author.lastName
+    };//end return
+  });//end author function
+
   return {
-    course: course
+    course: course,
+    authors: authorsFormattedForDropdown
   };//end return
+
 }//mapStateToProps
 
 function mapDispatchToProps(dispatch) {
